@@ -1,0 +1,88 @@
+#include <stdint.h>
+#include <stdbool.h>
+#include "syscall.h"  // Assuming custom OS syscalls are defined here
+
+#define MAX_INPUT_LEN 128
+
+// Function prototypes
+void init_terminal();
+void clear_screen();
+void print_prompt();
+void read_input(char *buffer, int max_len);
+void execute_command(const char *command);
+
+int main() {
+    // Initialize the terminal interface
+    init_terminal();
+
+    char input[MAX_INPUT_LEN];
+
+    // Main terminal loop
+    while (true) {
+        print_prompt();                 // Display prompt
+        read_input(input, MAX_INPUT_LEN);  // Read user input
+        execute_command(input);         // Execute entered command
+    }
+
+    return 0;
+}
+
+// Terminal initialization (optional)
+void init_terminal() {
+    clear_screen();
+    puts("Terminal initialized.\nType 'clear' to clear the screen.\n");
+}
+
+// Clear the screen by printing newlines (simple method)
+void clear_screen() {
+    for (int i = 0; i < 50; i++) {
+        putchar('\n');
+    }
+}
+
+// Display the command prompt
+void print_prompt() {
+    puts("terminal> ");
+}
+
+// Read user input into a buffer
+void read_input(char *buffer, int max_len) {
+    int index = 0;
+    char c;
+    
+    while (index < max_len - 1) {
+        c = getchar();
+        
+        // Handle Enter key
+        if (c == '\n') {
+            putchar('\n');
+            break;
+        }
+
+        // Handle Backspace key
+        if (c == '\b' && index > 0) {
+            index--;
+            putchar('\b');
+        } else {
+            buffer[index++] = c;
+            putchar(c);  // Echo character
+        }
+    }
+
+    buffer[index] = '\0';  // Null-terminate the string
+}
+
+// Execute a command based on input
+void execute_command(const char *command) {
+    if (strcmp(command, "clear") == 0) {
+        clear_screen();
+    } else if (strncmp(command, "echo ", 5) == 0) {
+        puts(command + 5);  // Print text after "echo "
+        putchar('\n');
+    } else if (strcmp(command, "exit") == 0) {
+        puts("Exiting terminal...\n");
+        exit(0);
+    } else {
+        puts("Command not recognized.\n");
+    }
+}
