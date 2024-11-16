@@ -18,3 +18,14 @@ void usb_init() {
         printf("No xHCI Controller found.\n");
     }
 }
+
+#include "usb.h"
+
+void usb_parse_descriptor(uint8_t *descriptor) {
+    usb_device_descriptor_t *device_desc = (usb_device_descriptor_t *)descriptor;
+
+    printf("USB Device Descriptor:\n");
+    printf("  Vendor ID: 0x%x\n", device_desc->idVendor);
+    printf("  Product ID: 0x%x\n", device_desc->idProduct);
+    printf("  Class: 0x%x\n", device_desc->bDeviceClass);
+}
